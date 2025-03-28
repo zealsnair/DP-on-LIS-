@@ -1,0 +1,50 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+// Function to find the Longest Bitonic Subsequence
+int longestBitonicSequence(vector<int> &arr, int n) {
+    vector<int> dp1(n, 1), dp2(n, 1);
+
+    // **Step 1: Find LIS (Longest Increasing Subsequence)**
+    for (int i = 0; i < n; i++) {
+        for (int prev = 0; prev < i; prev++) {
+            if (arr[prev] < arr[i] && dp1[i] < 1 + dp1[prev]) {
+                dp1[i] = 1 + dp1[prev];
+            }
+        }
+    }
+
+    // **Step 2: Find LIS from Back (LDS - Longest Decreasing Subsequence)**
+    for (int i = n - 1; i >= 0; i--) {
+        for (int prev = n - 1; prev > i; prev--) {
+            if (arr[prev] < arr[i] && dp2[i] < 1 + dp2[prev]) {
+                dp2[i] = 1 + dp2[prev];
+            }
+        }
+    }
+
+    // **Step 3: Find Maximum Length of Bitonic Sequence**
+    int maxi = 1;
+    for (int i = 0; i < n; i++) {
+        maxi = max(maxi, dp1[i] + dp2[i] - 1);
+    }
+
+    return maxi;
+}
+
+// **Main function to take user input**
+int main() {
+    int n;
+    cout << "Enter number of elements: ";
+    cin >> n;
+
+    vector<int> arr(n);
+    cout << "Enter elements: ";
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+
+    cout << "Length of Longest Bitonic Subsequence: " << longestBitonicSequence(arr, n) << endl;
+
+    return 0;
+}

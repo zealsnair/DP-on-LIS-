@@ -1,0 +1,95 @@
+#include <bits/stdc++.h> 
+using namespace std;
+
+// Function to check if we can form s1 by adding exactly one letter to s2
+bool checkPossible(string& s1, string& s2) {
+    if (s1.size() != s2.size() + 1) return false;
+
+    int first = 0, second = 0;
+    while (first < s1.size()) {
+        if (second < s2.size() && s1[first] == s2[second]) {
+            second++;
+        }
+        first++;
+    }
+
+    return second == s2.size();
+}
+
+// Memoization Approach
+int f(int ind, int prev_ind, vector<string>& arr, vector<vector<int>>& dp) {
+    if (ind == arr.size()) return 0;
+
+    if (dp[ind][prev_ind + 1] != -1) return dp[ind][prev_ind + 1];
+
+    int len = f(ind + 1, prev_ind, arr, dp); // Not take
+
+    if (prev_ind == -1 || checkPossible(arr[ind], arr[prev_ind])) {
+        len = max(len, 1 + f(ind + 1, ind, arr, dp)); // Take
+    }
+
+    return dp[ind][prev_ind + 1] = len;
+}
+
+// Tabulation Approach
+int tabulation(vector<string>& arr) {
+    int n = arr.size();
+    vector<int> dp(n, 1);
+    int maxLen = 1;
+
+    sort(arr.begin(), arr.end(), [](string& a, string& b) { return a.size() < b.size(); });
+
+    for (int i = 0; i < n; i++) {
+        for (int prev = 0; prev < i; prev++) {
+            if (checkPossible(arr[i], arr[prev]) && dp[i] < dp[prev] + 1) {
+                dp[i] = dp[prev] + 1;
+            }
+        }
+        maxLen = max(maxLen, dp[i]);
+    }
+
+    return maxLen;
+}
+
+// Space Optimized Approach (Using 1D DP)
+int spaceOptimized(vector<string>& arr) {
+    int n = arr.size();
+    vector<int> dp(n, 1);
+    int maxLen = 1;
+
+    sort(arr.begin(), arr.end(), [](string& a, string& b) { return a.size() < b.size(); });
+
+    for (int i = 0; i < n; i++) {
+        for (int prev = 0; prev < i; prev++) {
+            if (checkPossible(arr[i], arr[prev]) && dp[i] < dp[prev] + 1) {
+                dp[i] = dp[prev] + 1;
+            }
+        }
+        maxLen = max(maxLen, dp[i]);
+    }
+
+    return maxLen;
+}
+
+// Main Function for User Input
+int main() {
+    int n;
+    cout << "Enter number of words: ";
+    cin >> n;
+
+    vector<string> arr(n);
+    cout << "Enter words: ";
+    for (int i = 0; i < n; i++) cin >> arr[i];
+
+    // Memoization Approach
+    vector<vector<int>> dp(n, vector<int>(n + 1, -1));
+    cout << "Longest String Chain (Memoization): " << f(0, -1, arr, dp) << endl;
+
+    // Tabulation Approach
+    cout << "Longest String Chain (Tabulation): " << tabulation(arr) << endl;
+
+    // Space-Optimized Approach
+    cout << "Longest String Chain (Space Optimized): " << spaceOptimized(arr) << endl;
+
+    return 0;
+}

@@ -1,0 +1,49 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+// Function to find number of LIS using Tabulation (Bottom-Up DP)
+int findNumberOfLIS(vector<int> &nums) {
+    int n = nums.size();
+    vector<int> dp(n, 1), cnt(n, 1); // dp -> LIS length, cnt -> Count of LIS
+    int maxi = 1;
+
+    for (int i = 0; i < n; i++) {
+        for (int prev = 0; prev < i; prev++) {
+            if (nums[prev] < nums[i]) {
+                if (dp[prev] + 1 > dp[i]) { 
+                    dp[i] = dp[prev] + 1;
+                    cnt[i] = cnt[prev]; // Reset count
+                } 
+                else if (dp[prev] + 1 == dp[i]) {
+                    cnt[i] += cnt[prev]; // Add count
+                }
+            }
+        }
+        maxi = max(maxi, dp[i]);
+    }
+
+    int numOfLIS = 0;
+    for (int i = 0; i < n; i++) {
+        if (dp[i] == maxi) {
+            numOfLIS += cnt[i];
+        }
+    }
+    return numOfLIS;
+}
+
+// Main function to take user input
+int main() {
+    int n;
+    cout << "Enter number of elements: ";
+    cin >> n;
+
+    vector<int> nums(n);
+    cout << "Enter elements: ";
+    for (int i = 0; i < n; i++) {
+        cin >> nums[i];
+    }
+
+    cout << "Number of Longest Increasing Subsequences: " << findNumberOfLIS(nums) << endl;
+
+    return 0;
+}
